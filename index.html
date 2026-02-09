@@ -382,75 +382,43 @@
         }
     }
     
-    function submitForm() {
-        const email = document.getElementById('emailInput').value;
-        const name = document.getElementById('nameInput').value;
-        
-        if (!email || !email.includes('@')) {
-            alert('Please enter a valid email address');
-            return;
-        }
-        
-        if (selectedTopics.length === 0) {
-            alert('Please select at least one topic');
-            return;
-        }
-        
-        // Create MailerLite embedded form dynamically
-        const mlContainer = document.createElement('div');
-        mlContainer.id = 'mlb2-XXXXX';
-        mlContainer.className = 'ml-form-embedContainer ml-subscribe-form ml-subscribe-form-XXXXX';
-        mlContainer.style.display = 'none';
-        document.body.appendChild(mlContainer);
-        
-        // Add MailerLite embed code
-        mlContainer.innerHTML = `
-            <div class="ml-embedded" data-form="M3lv5S"></div>
-        `;
-        
-        // Load MailerLite script
-        const script = document.createElement('script');
-        script.src = 'https://assets.mailerlite.com/js/universal.js';
-        script.onload = function() {
-            // Initialize MailerLite
-            window.ml('account', '681012');
-            
-            // Wait for form to be ready
-            setTimeout(function() {
-                // Find the embedded form
-                const mlForm = document.querySelector('[data-form="M3lv5S"]');
-                if (mlForm) {
-                    // Find input fields
-                    const emailField = mlForm.querySelector('input[type="email"]');
-                    const nameField = mlForm.querySelector('input[name*="name"]') || mlForm.querySelector('input[name*="fields[name]"]');
-                    const topicsField = mlForm.querySelector('input[name*="topics"]') || mlForm.querySelector('input[name*="fields[topics]"]');
-                    const submitBtn = mlForm.querySelector('button[type="submit"]');
-                    
-                    // Populate fields
-                    if (emailField) emailField.value = email;
-                    if (nameField) nameField.value = name || '';
-                    if (topicsField) topicsField.value = selectedTopics.join(', ');
-                    
-                    // Submit form
-                    if (submitBtn) {
-                        submitBtn.click();
-                    }
-                    
-                    // Show success page after short delay
-                    setTimeout(function() {
-                        nextStep(5);
-                        // Clean up
-                        mlContainer.remove();
-                    }, 1000);
-                } else {
-                    console.error('MailerLite form not found');
-                    // Still show success page
-                    nextStep(5);
-                }
-            }, 1500);
-        };
-        document.head.appendChild(script);
+   async function submitForm() {
+    const email = document.getElementById('emailInput').value;
+    const name = document.getElementById('nameInput').value;
+    
+    if (!email || !email.includes('@')) {
+        alert('Please enter a valid email address');
+        return;
     }
+    
+    if (selectedTopics.length === 0) {
+        alert('Please select at least one topic');
+        return;
+    }
+    
+    try {
+        // Prepare form data with CORRECT field names
+        const formData = new FormData();
+        formData.append('fields[email]', email);
+        formData.append('fields[name]', name || '');
+        formData.append('fields[arc_interests]', selectedTopics.join(', ')); // Campo corretto!
+        formData.append('ml-submit', '1');
+        formData.append('anticsrf', 'true');
+        
+        // Submit to MailerLite with CORRECT endpoint
+        await fetch('https://assets.mailerlite.com/jsonp/681012/forms/178916307871205309/subscribe', {
+            method: 'POST',
+            body: formData,
+            mode: 'no-cors'
+        });
+        
+        // Show success page
+        nextStep(5);
+    } catch (error) {
+        console.error('Submission error:', error);
+        nextStep(5);
+    }
+}
     
     // Initialize progress bar
     updateProgress(1);
