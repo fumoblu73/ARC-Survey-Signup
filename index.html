@@ -400,58 +400,43 @@
             }
         }
         
-        function submitForm() {
-            const email = document.getElementById('emailInput').value;
-            const name = document.getElementById('nameInput').value;
-            
-            if (!email || !email.includes('@')) {
-                alert('Please enter a valid email address');
-                return;
-            }
-            
-            if (selectedTopics.length === 0) {
-                alert('Please select at least one topic');
-                return;
-            }
-            
-            // Populate hidden form
-            document.getElementById('hiddenEmail').value = email;
-            document.getElementById('hiddenName').value = name || '';
-            document.getElementById('hiddenTopics').value = selectedTopics.join(', ');
-            
-            // Submit hidden form
-            document.getElementById('hiddenMailerLiteForm').submit();
-            
-            // Show success page immediately
-            setTimeout(function() {
-                nextStep(5);
-            }, 500);
-        }
-        
-        // Initialize progress bar
-        updateProgress(1);
-        
-        // Handle Enter key on email input
-        document.addEventListener('DOMContentLoaded', function() {
-            const emailInput = document.getElementById('emailInput');
-            const nameInput = document.getElementById('nameInput');
-            
-            if (emailInput) {
-                emailInput.addEventListener('keypress', function(e) {
-                    if (e.key === 'Enter') {
-                        nextStep(4);
-                    }
-                });
-            }
-            
-            if (nameInput) {
-                nameInput.addEventListener('keypress', function(e) {
-                    if (e.key === 'Enter') {
-                        nextStep(4);
-                    }
-                });
-            }
+async function submitForm() {
+    const email = document.getElementById('emailInput').value;
+    const name = document.getElementById('nameInput').value;
+    
+    if (!email || !email.includes('@')) {
+        alert('Please enter a valid email address');
+        return;
+    }
+    
+    if (selectedTopics.length === 0) {
+        alert('Please select at least one topic');
+        return;
+    }
+    
+    try {
+        // Send to Relay webhook
+        const response = await fetch('https://hook.relay.app/api/v1/playbook/cmlf30iie8ksm0qkqefpdgsqr/trigger/By1tJHiW01_pjRCuIQKi6Q', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                email: email,
+                name: name,
+                topics: selectedTopics.join(', ')
+            })
         });
-    </script>
+        
+        console.log('Webhook sent successfully:', response.status);
+        
+        // Show success page
+        nextStep(5);
+    } catch (error) {
+        console.error('Submission error:', error);
+        // Still show success page even if webhook fails
+        nextStep(5);
+    }
+}
 </body>
 </html>
