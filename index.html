@@ -6,6 +6,24 @@
   <meta name="description" content="Apply to join our Advance Reader Team and get early access to selected non-fiction titles before release." />
   <title>ARC Team Survey - Advance Reader Application</title>
 
+  <!-- Meta Pixel Code -->
+  <script>
+  !function(f,b,e,v,n,t,s)
+  {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+  n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+  if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+  n.queue=[];t=b.createElement(e);t.async=!0;
+  t.src=v;s=b.getElementsByTagName(e)[0];
+  s.parentNode.insertBefore(t,s)}(window, document,'script',
+  'https://connect.facebook.net/en_US/fbevents.js');
+  fbq('init', '978422971795283');
+  fbq('track', 'PageView');
+  </script>
+  <noscript><img height="1" width="1" style="display:none"
+  src="https://www.facebook.com/tr?id=978422971795283&ev=PageView&noscript=1"
+  /></noscript>
+  <!-- End Meta Pixel Code -->
+
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -406,10 +424,13 @@
 
         console.log('Webhook sent successfully:', response.status);
         nextStep(4);
+        // Fire Meta Pixel Lead event on successful submission
+        if (typeof fbq !== 'undefined') fbq('track', 'Lead');
       } catch (error) {
         console.error('Submission error:', error);
         // Show success even if webhook fails
         nextStep(4);
+        if (typeof fbq !== 'undefined') fbq('track', 'Lead');
       }
     }
 
