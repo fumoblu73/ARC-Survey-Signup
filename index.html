@@ -252,12 +252,13 @@
       <!-- Name first: psychologically less intimidating, reduces drop-off -->
       <input type="text" id="nameInput" placeholder="Your first name" />
       <input type="email" id="emailInput" placeholder="Your best email" required />
-      <p class="small-text">
-        By joining, you agree to our <a href="https://www.iubenda.com/privacy-policy/16229506"
-          class="privacy-link"
-          target="_blank"
-          rel="noopener noreferrer">privacy policy</a>.
-      </p>
+      <div style="display:flex; align-items:flex-start; gap:10px; margin:10px 0 20px;">
+        <input type="checkbox" id="consentCheck" style="margin-top:4px; width:18px; height:18px; flex-shrink:0; cursor:pointer; accent-color:#10b981;" />
+        <label for="consentCheck" class="small-text" style="text-align:left; cursor:pointer;">
+          I agree to receive occasional emails from Rainbook Editions about free books and the ARC program.
+          <a href="https://www.iubenda.com/privacy-policy/16229506" class="privacy-link" target="_blank" rel="noopener noreferrer">Privacy policy</a>.
+        </label>
+      </div>
       <button onclick="nextStep(3)">Join the ARC Team</button>
     </div>
 
@@ -354,6 +355,11 @@
         const email = document.getElementById('emailInput').value;
         if (!email || !email.includes('@')) {
           alert('Please enter a valid email address');
+          return;
+        }
+        const consent = document.getElementById('consentCheck');
+        if (!consent.checked) {
+          alert('Please agree to our privacy policy to continue');
           return;
         }
       }
