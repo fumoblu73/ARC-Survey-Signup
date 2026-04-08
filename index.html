@@ -422,12 +422,15 @@
         groups: [MAILERLITE_GROUP_ID]
       };
 
+      const consentDateForSender = new Date().toISOString().split('T')[0]; // formato YYYY-MM-DD
+
       const senderPayload = {
         email: email,
         firstname: name,
         groups: [SENDER_GROUP_ID],
         fields: {
-          arc_interests: arcInterests
+          arc_interests: arcInterests,
+          consent_date: consentDateForSender
         }
       };
 
